@@ -52,6 +52,18 @@ export default async function handler(req, res) {
 
   const { demoVideo, photoboothVideo, description, neighbor, app } = req.body;
 
+  // Check app name and token with regex
+  const tokenRegex = /^[A-Za-z0-9_-]{10,}$/;
+  if (!neighbor || !tokenRegex.test(neighbor)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid or missing neighbor token" });
+  }
+  const appNameRegex = /^[a-zA-Z0-9\s-]+$/;
+  if (!app || !appNameRegex.test(app)) {
+    return res.status(400).json({ message: "Invalid or missing app name" });
+  }
+
   if (!demoVideo || !photoboothVideo || !description || !neighbor || !app) {
     return res.status(400).json({ message: "Missing required fields" });
   }
