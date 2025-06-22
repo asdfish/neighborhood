@@ -63,6 +63,22 @@ export default async function handler(req, res) {
   if (!app || !appNameRegex.test(app)) {
     return res.status(400).json({ message: "Invalid or missing app name" });
   }
+  const descriptionRegex = /^[\s\S]{1,1000}$/;
+  const videoUrlRegex =
+    /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
+  if (
+    !description ||
+    !descriptionRegex.test(description) ||
+    !demoVideo ||
+    !videoUrlRegex.test(demoVideo) ||
+    !photoboothVideo ||
+    !videoUrlRegex.test(photoboothVideo)
+  ) {
+    return res.status(400).json({
+      message:
+        "Invalid or missing fields: demoVideo, photoboothVideo, description",
+    });
+  }
 
   if (!demoVideo || !photoboothVideo || !description || !neighbor || !app) {
     return res.status(400).json({ message: "Missing required fields" });
