@@ -59,7 +59,9 @@ export default async function handler(req, res) {
       .status(400)
       .json({ message: "Invalid or missing neighbor token" });
   }
-  const appNameRegex = /^[a-zA-Z0-9\s-]+$/;
+  // Allow everything but not "=" and "@" in app name
+
+  const appNameRegex = /^[\w\s-]{1,100}$/; // Adjust length as needed
   if (!app || !appNameRegex.test(app)) {
     return res.status(400).json({ message: "Invalid or missing app name" });
   }
