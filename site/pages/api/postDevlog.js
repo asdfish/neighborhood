@@ -60,10 +60,6 @@ export default async function handler(req, res) {
       .json({ message: "Invalid or missing neighbor token" });
   }
 
-  const appNameRegex = /^[\w\s-]{1,100}$/; // Allows alphanumeric, spaces, underscores, and hyphens
-  if (!app || !appNameRegex.test(app)) {
-    return res.status(400).json({ message: "Invalid or missing app name" });
-  }
   const descriptionRegex = /^[\s\S]{1,1000}$/;
   const videoUrlRegex =
     /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
@@ -85,6 +81,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
+  const escapedAppName = app.replaceAll("'", String.raw`\'`)
+
   try {
     // Look up neighbor record by token to get their email
     let neighborId = neighbor;
@@ -100,12 +98,12 @@ export default async function handler(req, res) {
     }
 
     // Look up app record by name to get its id and links
-    let appId = app;
+    let appId = escapedAppName;
     let appLink = null;
     let githubUrl = null;
     try {
       const appRecords = await base("Apps")
-        .select({ filterByFormula: `{Name} = '${app}'`, maxRecords: 1 })
+        .select({ filterByFormula: `{Name} = '${escapedAppName}'`, maxRecords: 1 })
         .firstPage();
       if (appRecords.length > 0) {
         appId = appRecords[0].id;
