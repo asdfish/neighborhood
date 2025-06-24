@@ -81,7 +81,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
-  const escapedAppName = app.replaceAll("'", String.raw`\'`)
+  const escapedAppName = app.replaceAll("'", "''")
 
   try {
     // Look up neighbor record by token to get their email
