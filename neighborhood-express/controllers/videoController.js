@@ -36,11 +36,11 @@ export async function uploadVideo(req, res) {
 
     const file = Array.isArray(files.file) ? files.file[0] : files.file;
 
-    const fileBuffer = fs.readFileSync(file.filepath);
+    const fileBuffer = await fs.promises.readFile(file.filepath);
     const s3Key = `omg-moments/${Date.now()}-${file.originalFilename}`;
     const s3Upload = await uploadToS3(fileBuffer, s3Key, file.mimetype);
 
-    fs.unlinkSync(file.filepath);
+    await fs.promises.unlink(file.filepath);
 
     res.status(200).json({
       url: s3Upload.Location,
@@ -90,13 +90,13 @@ export async function uploadIcon(req, res) {
       console.log("File object:", file); // Debug log
 
       // File type validation is now handled by the filter option above
-      const fileBuffer = fs.readFileSync(file.filepath);
+      const fileBuffer = await fs.promises.readFile(file.filepath);
       const s3Key = `omg-moments/${Date.now()}-${file.originalFilename}`;
       const s3Upload = await uploadToS3(fileBuffer, s3Key, file.mimetype);
 
       // Clean up the temporary file
       try {
-        fs.unlinkSync(file.filepath);
+        await fs.promises.unlink(file.filepath);
       } catch (unlinkError) {
         console.error("Error cleaning up temporary file:", unlinkError);
         // Continue execution even if cleanup fails
@@ -157,13 +157,13 @@ export async function uploadScreenshot(req, res) {
       const file = files.file[0]; // Get the first file from the 'file' field
 
       // File type validation is handled by the filter option above
-      const fileBuffer = fs.readFileSync(file.filepath);
+      const fileBuffer = await fs.promises.readFile(file.filepath);
       const s3Key = `screenshots/${Date.now()}-${file.originalFilename}`;
       const s3Upload = await uploadToS3(fileBuffer, s3Key, file.mimetype);
 
       // Clean up the temporary file
       try {
-        fs.unlinkSync(file.filepath);
+        await fs.promises.unlink(file.filepath);
       } catch (unlinkError) {
         console.error("Error cleaning up temporary file:", unlinkError);
         // Continue execution even if cleanup fails
@@ -229,12 +229,12 @@ export async function uploadImages(req, res) {
         continue; // Skip non-image files
       }
 
-      const fileBuffer = fs.readFileSync(file.filepath);
+      const fileBuffer = await fs.promises.readFile(file.filepath);
       const s3Key = `omg-moments/${Date.now()}-${file.originalFilename}`;
       const s3Upload = await uploadToS3(fileBuffer, s3Key, file.mimetype);
       uploadedUrls.push(s3Upload.Location);
 
-      fs.unlinkSync(file.filepath);
+      await fs.promises.unlink(file.filepath);
     }
 
     if (uploadedUrls.length === 0) {
